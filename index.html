@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0c1720" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Глянец" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <title>Глянец: Стражницы</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="topbar" class="topbar">
+      <div class="brand">
+        <img src="icons/icon-192.png" alt="" class="brand-icon" />
+        <div>
+          <div class="brand-title">Глянец: Стражницы</div>
+          <div class="brand-sub">Кампания · Люмина</div>
+        </div>
+      </div>
+      <div class="currencies">
+        <div class="chip gold" id="chipGold" title="Золото"><span>0</span></div>
+        <div class="chip shards" id="chipShards" title="Осколки глянца"><span>0</span></div>
+      </div>
+    </header>
+
+    <section id="screen-map" class="screen active" data-screen="map">
+      <div class="map-wrap">
+        <img src="img/map_bg.jpg" alt="Карта Люмины" class="map-bg" />
+        <div id="mapNodes" class="map-nodes"></div>
+      </div>
+      <div class="sheet" id="mapSheet">
+        <div class="sheet-name" id="sheetName">Квартал Ателье</div>
+        <div class="sheet-sub" id="sheetSub">Первые тени у мастерских</div>
+        <div class="sheet-meta" id="sheetMeta"></div>
+        <button class="btn primary" id="btnPlay">Играть</button>
+      </div>
+    </section>
+
+    <section id="screen-trials" class="screen" data-screen="trials">
+      <h1 class="page-title">Испытания</h1>
+      <p class="page-lead">Офлайн-режимы против теней. Сети нет — только вы и Врата.</p>
+      <div class="card trial-card">
+        <h2>Выживание</h2>
+        <p>Бесконечные волны, босс каждая 5-я. Награда за стойкость, рекорд хранится на устройстве.</p>
+        <div class="trial-best">Рекорд: <b id="survivalBest">0</b> волн</div>
+        <button class="btn primary" id="btnSurvival">Начать выживание</button>
+      </div>
+      <div class="card muted-card">
+        <h2>Скоро</h2>
+        <p>Зеркальные колоды и испытания с модификаторами появятся в следующих версиях.</p>
+      </div>
+    </section>
+
+    <section id="screen-collection" class="screen" data-screen="collection">
+      <h1 class="page-title">Коллекция</h1>
+      <p class="page-lead" id="critLine">Крит коллекции: 5% · урон крита +160%</p>
+      <div class="deck-row-label">Колода для боя (5 карт) — нажмите карту, затем слот</div>
+      <div class="deck-slots" id="deckSlots"></div>
+      <div class="unit-grid" id="unitGrid"></div>
+    </section>
+
+    <section id="screen-shop" class="screen" data-screen="shop">
+      <h1 class="page-title">Магазин</h1>
+      <div class="shop-banner">Только игровая валюта · офлайн · без покупок за деньги</div>
+      <div id="shopList" class="shop-list"></div>
+    </section>
+
+    <section id="screen-workshop" class="screen" data-screen="workshop">
+      <h1 class="page-title">Мастерская</h1>
+      <div class="card">
+        <h2>Как играть</h2>
+        <ol class="rules">
+          <li>Тратьте <b>ману</b> на кнопку <b>Призыв</b> — на поле появится случайная стражница из колоды.</li>
+          <li>Перетащите двух <b>одинаковых одного ранга</b> друг на друга: они сольются в случайную карту колоды рангом выше.</li>
+          <li>На высоких рангах суммарная сила может упасть — иногда лучше оставить больше юнитов.</li>
+          <li>Если поле заполнено, сначала слейте пару, чтобы освободить клетку.</li>
+          <li>Внизу можно усилить тип стражницы прямо в бою за ману.</li>
+          <li>Когда шкала <b>морали</b> заполнена, нажмите Манекенщицу: манекен перекроет путь и взорвётся.</li>
+          <li>Босс приходит каждую <b>5-ю волну</b>. Если жизни кончатся — поражение.</li>
+        </ol>
+        <button class="btn primary" id="btnPractice">Учебный бой (3 волны)</button>
+      </div>
+      <img src="img/lineup.jpg" alt="Стражницы" class="lineup-art" />
+    </section>
+
+    <section id="screen-battle" class="screen battle-screen" data-screen="battle">
+      <div class="battle-top">
+        <button class="icon-btn" id="btnPause" aria-label="Пауза">Ⅱ</button>
+        <div class="lives" id="lives">♥ ♥ ♥</div>
+        <div class="wave-ind" id="waveInd">Волна 1</div>
+        <div class="chip gold tiny" id="battleGold"><span>0</span></div>
+      </div>
+      <div class="battle-stage">
+        <canvas id="battleCanvas"></canvas>
+      </div>
+      <div class="battle-hud">
+        <button class="hero-btn" id="btnHero" aria-label="Способность героини">
+          <img src="img/hero_mannequin.png" alt="Манекенщица" />
+          <div class="morale"><i id="moraleBar"></i></div>
+          <span>Манекенщица</span>
+        </button>
+        <button class="summon-btn" id="btnSummon">
+          <div class="summon-title">ПРИЗЫВ</div>
+          <div class="summon-mana" id="manaLabel">мана 100</div>
+          <div class="summon-cost" id="costLabel">цена 10</div>
+        </button>
+        <div class="upgrade-slots" id="upgradeSlots"></div>
+      </div>
+    </section>
+
+    <nav id="tabbar" class="tabbar">
+      <button data-tab="map" class="active">Карта</button>
+      <button data-tab="trials">Испытания</button>
+      <button data-tab="collection">Коллекция</button>
+      <button data-tab="shop">Магазин</button>
+      <button data-tab="workshop">Мастерская</button>
+    </nav>
+  </div>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard"></div>
+  </div>
+  <div id="toasts" class="toasts"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/battle.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
